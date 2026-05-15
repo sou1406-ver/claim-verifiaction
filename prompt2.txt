@@ -1,0 +1,92 @@
+Bạn là chuyên gia xây dựng dataset tiếng Việt cho bài toán Natural Language Inference / Claim Verification.
+
+Hãy tạo dữ liệu theo cấu trúc:
+ID, Claim, Evidence, Label.
+
+Mục tiêu:
+Tạo các mẫu dữ liệu có thể dùng để huấn luyện mô hình phân loại quan hệ giữa Claim và Evidence.
+
+Các nhãn:
+1. SUPPORTED:
+Claim đúng và được chứng minh bởi Evidence.
+
+2. REFUTED:
+Claim sai hoặc mâu thuẫn rõ ràng với Evidence.
+
+3. NEI:
+Claim có liên quan đến Evidence nhưng Evidence không đủ thông tin để kết luận đúng hoặc sai.
+
+Yêu cầu bắt buộc:
+- Claim dài từ 5 đến 25 từ.
+- Evidence dài từ 50 đến 200 từ.
+- Evidence phải là đoạn văn hoàn chỉnh, không bị cắt bằng dấu "...".
+- Claim phải là câu hoàn chỉnh, có nghĩa, không bị cụt.
+- Không để claim kết thúc bằng các từ như "của", "với", "bằng", "do", "tại", "sau", "trong", "một".
+- Không tạo claim trùng hoàn toàn.
+- Không tạo evidence trùng hoàn toàn quá nhiều lần.
+- Không để label trống.
+- Không dùng các cụm từ độn như: "trong đoạn văn trên", "như đã đề cập", "trong bối cảnh được nêu", "được nêu là".
+- Không dùng văn phong quá máy móc.
+
+Yêu cầu về chất lượng SUPPORTED:
+- Claim phải được Evidence hỗ trợ rõ.
+- Claim không được copy nguyên văn cả câu từ Evidence.
+- Nên paraphrase lại bằng cách thay đổi cấu trúc câu hoặc khái quát hóa thông tin.
+- Không thêm thông tin ngoài Evidence.
+
+Yêu cầu về chất lượng REFUTED:
+- Claim phải bị Evidence bác bỏ rõ ràng.
+- Không nên chỉ thêm chữ phủ định một cách đơn giản.
+- Ưu tiên tạo sai bằng cách:
+  + đổi chủ thể
+  + đổi địa điểm
+  + đổi thời gian
+  + đổi nguyên nhân
+  + đổi kết quả
+  + đổi thuộc tính
+- Claim vẫn phải tự nhiên và có vẻ hợp lý nếu đọc riêng.
+
+Yêu cầu về chất lượng NEI:
+- Claim phải liên quan đến Evidence.
+- Evidence không đủ thông tin để kết luận.
+- Claim không được quá xa chủ đề.
+- Claim không được bị Evidence bác bỏ trực tiếp.
+- Tránh tạo NEI bằng các câu quá chung chung hoặc vô nghĩa.
+
+Yêu cầu cân bằng:
+- Với mỗi nhóm dữ liệu, số lượng 3 nhãn phải cân bằng.
+- Tỉ lệ nhãn nên xấp xỉ:
+  + SUPPORTED: 1/3
+  + REFUTED: 1/3
+  + NEI: 1/3
+
+Chủ đề:
+Ưu tiên các chủ đề có thông tin ổn định, ít thay đổi theo thời gian:
+- Lịch sử
+- Địa lý
+- Văn hóa
+- Khoa học phổ thông
+- Môi trường
+- Công nghệ cơ bản
+- Y tế phổ thông
+- Giáo dục
+- Xã hội
+
+Tránh:
+- Tin tức thời sự mới
+- Số liệu kinh tế dễ thay đổi
+- Chính trị hiện tại
+- Nội dung nhạy cảm
+- Nội dung gây tranh cãi khó kiểm chứng
+
+Format output:
+CSV, đúng 4 cột:
+ID,Claim,Evidence,Label
+
+Quy tắc ID:
+- ID có dạng vi_0001, vi_0002, vi_0003...
+- ID tăng tuần tự.
+- Không được trùng ID.
+
+Không thêm phần giải thích.
+Chỉ xuất bảng CSV.

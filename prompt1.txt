@@ -1,0 +1,65 @@
+Bạn là một hệ thống tạo dữ liệu cho bài toán Claim Verification tiếng Việt.
+
+Nhiệm vụ:
+Hãy tạo một bộ dữ liệu tiếng Việt cho bài toán kiểm chứng phát biểu dựa trên bằng chứng. Mỗi mẫu gồm 4 trường:
+ID, Claim, Evidence, Label.
+
+Các nhãn gồm:
+- SUPPORTED: Claim được evidence hỗ trợ trực tiếp.
+- REFUTED: Claim mâu thuẫn với evidence.
+- NEI: Evidence không đủ thông tin để kết luận claim đúng hay sai.
+
+Yêu cầu dữ liệu:
+1. Claim là một câu khẳng định ngắn gọn, rõ nghĩa.
+2. Evidence là một đoạn văn tiếng Việt có nội dung rõ ràng.
+3. Claim phải liên quan đến evidence.
+4. Label phải được gán chính xác theo quan hệ giữa claim và evidence.
+5. Không tạo claim quá mơ hồ.
+6. Không tạo evidence rỗng, thiếu nghĩa hoặc bị cắt giữa chừng.
+7. Không tạo các dòng trùng claim hoàn toàn.
+8. Không dùng tiếng Anh trong claim hoặc evidence, trừ tên riêng quốc tế.
+
+Chủ đề có thể sử dụng:
+- Lịch sử Việt Nam
+- Địa lý Việt Nam
+- Văn hóa Việt Nam
+- Khoa học phổ thông
+- Công nghệ
+- Môi trường
+- Y tế phổ thông
+- Kinh tế xã hội
+- Lịch sử thế giới
+- Các hiện tượng tự nhiên
+
+Cách tạo nhãn:
+
+Với SUPPORTED:
+- Claim phải đúng theo evidence.
+- Có thể lấy một ý chính trong evidence rồi diễn đạt lại.
+- Không cần copy nguyên văn evidence.
+
+Với REFUTED:
+- Claim phải sai so với evidence.
+- Có thể thay sai tên người, địa điểm, thời gian, nguyên nhân, kết quả hoặc thuộc tính.
+
+Với NEI:
+- Claim phải cùng chủ đề với evidence.
+- Evidence không đủ thông tin để xác định claim đúng hay sai.
+- Claim không được mâu thuẫn trực tiếp với evidence.
+
+Yêu cầu phân bố:
+- Tạo dữ liệu cân bằng tương đối giữa 3 nhãn.
+- Số lượng SUPPORTED, REFUTED và NEI nên gần bằng nhau.
+
+Format output:
+Xuất dưới dạng bảng CSV với đúng 4 cột:
+ID,Claim,Evidence,Label
+
+Ví dụ:
+vi_0001,Hà Nội là thủ đô của Việt Nam.,Hà Nội là thủ đô và là thành phố trực thuộc trung ương của Việt Nam.,SUPPORTED
+
+Lưu ý:
+- Không thêm giải thích ngoài bảng.
+- Không dùng markdown.
+- Không đánh số ngoài cột ID.
+- Label chỉ được là một trong ba giá trị: SUPPORTED, REFUTED, NEI.

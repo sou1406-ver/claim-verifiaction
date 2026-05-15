@@ -1,0 +1,218 @@
+Bạn là chuyên gia xây dựng dataset tiếng Việt chất lượng cao cho bài toán Claim Verification / NLI.
+
+Tôi đã có danh sách Evidence gốc. Hãy sinh claim từ các Evidence đó theo chuẩn HARD REASONING V2 và chuẩn bị dữ liệu cuối cùng để huấn luyện mô hình.
+
+Nhiệm vụ:
+1. Từ mỗi Evidence hợp lệ, tạo 3 claim:
+   - 1 SUPPORTED
+   - 1 REFUTED
+   - 1 NEI
+2. Giữ nguyên Evidence đầy đủ, không dùng dấu "...".
+3. Sinh claim tự nhiên, đúng ngữ pháp, không bị robot.
+4. Đảm bảo dữ liệu có thể dùng để train/dev/test.
+5. Thực hiện QC logic trước khi xuất.
+
+Cấu trúc dữ liệu chính:
+ID,Claim,Evidence,Label
+
+Label:
+- SUPPORTED
+- REFUTED
+- NEI
+
+YÊU CẦU BẮT BUỘC:
+
+A. Điều kiện về độ dài
+1. Claim phải dài từ 10 đến 25 từ.
+2. Evidence phải dài từ 50 đến 200 từ.
+3. Nếu Evidence dưới 50 từ, trên 200 từ hoặc bị cắt bằng "...", bỏ Evidence đó.
+4. Không tự thêm câu vá chung chung vào Evidence.
+5. Không tạo claim dưới 10 từ dù vẫn đúng ngữ nghĩa.
+
+B. Điều kiện về word count trong group
+1. Mỗi Evidence tạo đúng 3 claim.
+2. Ba claim trong cùng một Evidence phải có số từ bằng nhau tuyệt đối.
+3. Số từ tính bằng cách tách theo khoảng trắng.
+4. Dấu câu không tính là từ.
+5. Không ép toàn bộ dataset có cùng số từ.
+6. Mỗi group được tự chọn số từ phù hợp, miễn 3 claim trong group bằng nhau.
+7. Nếu một claim lệch 1 từ so với hai claim còn lại, phải chỉnh lại claim đó.
+
+C. Điều kiện về câu hoàn chỉnh
+1. Claim phải là câu hoàn chỉnh.
+2. Claim không được kết thúc bằng:
+   - của
+   - với
+   - bằng
+   - tại
+   - trong
+   - sau
+   - do
+   - cho
+   - một
+   - các
+3. Không được cắt cụt câu để đạt đúng số từ.
+4. Không được tạo cụm danh từ thay cho câu hoàn chỉnh.
+5. Claim phải có ý nghĩa độc lập khi đọc riêng.
+
+D. Điều kiện chống filler
+Tuyệt đối không dùng các cụm sau:
+- trong bối cảnh lịch sử được nêu
+- trong bối cảnh được nêu
+- trong đoạn văn trên
+- theo đoạn văn
+- như đã đề cập
+- được nêu là
+- được mô tả là
+- trong evidence này
+- thông tin này
+- điều đó
+- nội dung trên
+- dữ kiện trên
+
+E. Điều kiện cho SUPPORTED
+1. Claim phải đúng theo Evidence.
+2. Claim phải được Evidence hỗ trợ trực tiếp hoặc suy ra rõ ràng.
+3. Không được copy nguyên câu từ Evidence.
+4. Không được bê nguyên cụm dài từ Evidence.
+5. Phải paraphrase bằng cách:
+   - thay đổi cấu trúc câu
+   - dùng từ đồng nghĩa
+   - khái quát hóa hợp lý
+   - rút ý chính
+6. Không thêm thông tin ngoài Evidence.
+7. Không dùng từ phóng đại nếu Evidence không nêu.
+
+F. Điều kiện cho REFUTED
+1. Claim phải sai rõ so với Evidence.
+2. Cấm tuyệt đối các từ phủ định:
+   - không
+   - chưa
+   - chẳng
+   - phi
+   - không phải
+   - không có
+   - không được
+   - không còn
+3. Không được tạo REFUTED bằng cách phủ định trực tiếp câu SUPPORTED.
+4. Phải tạo sai bằng các cách:
+   - đổi tên nhân vật
+   - đổi triều đại
+   - đổi quốc gia
+   - đổi địa điểm
+   - đổi thời gian
+   - đổi nguyên nhân
+   - đổi kết quả
+   - đổi tính chất
+   - đổi phạm vi
+5. REFUTED phải mâu thuẫn rõ với Evidence.
+6. REFUTED không được chỉ là thiếu thông tin.
+
+G. Điều kiện cho NEI
+1. Claim phải cùng chủ đề với Evidence.
+2. Evidence không đủ thông tin để kết luận.
+3. Claim không được mâu thuẫn trực tiếp với Evidence.
+4. Claim không được quá xa Evidence.
+5. Claim nên thêm một chi tiết hợp lý chưa có trong Evidence.
+6. Các kiểu chi tiết NEI nên đa dạng:
+   - cải cách thuế
+   - ảnh hưởng kinh tế
+   - tác động xã hội
+   - thay đổi dân cư
+   - mục đích chính trị
+   - chính sách giáo dục
+   - ảnh hưởng môi trường
+   - số liệu cụ thể
+   - phản ứng của cộng đồng
+   - tác động dài hạn
+7. Không dùng đi dùng lại motif "lợi nhuận", "chi phí", "doanh thu".
+8. NEI phải khác SUPPORTED và REFUTED về nội dung kiểm chứng.
+
+H. Điều kiện chống trùng và chống shortcut
+1. Không trùng claim hoàn toàn.
+2. Không để SUPPORTED và NEI có cùng claim.
+3. Không để REFUTED chỉ khác SUPPORTED đúng một từ ở quá nhiều nhóm.
+4. Không để claim của một nhãn luôn dài hơn nhãn khác.
+5. Không để REFUTED có dấu hiệu ngôn ngữ riêng.
+6. Không để SUPPORTED copy Evidence nhiều hơn hai nhãn còn lại.
+7. Không tạo pattern lặp kiểu:
+   - A gây ra B
+   - B gây ra A
+   - A gây ra lợi nhuận
+   lặp liên tục trong nhiều dòng.
+
+I. QC bắt buộc trước khi xuất
+Sau khi sinh, tự kiểm tra các lỗi sau:
+1. Claim dưới 10 từ.
+2. Claim trên 25 từ.
+3. Evidence dưới 50 từ.
+4. Evidence trên 200 từ.
+5. Evidence chứa "...".
+6. Claim trùng hoàn toàn.
+7. REFUTED chứa từ phủ định bị cấm.
+8. Claim chứa filler bị cấm.
+9. Ba claim trong cùng group lệch word count.
+10. Label ngoài SUPPORTED, REFUTED, NEI.
+11. Claim bị cụt câu.
+12. Claim quá xa Evidence.
+13. NEI bị biến thành REFUTED.
+14. REFUTED bị biến thành NEI.
+
+Nếu có lỗi, sửa lại trước khi xuất.
+
+J. Chia dữ liệu
+Sau khi có dataset hoàn chỉnh, chia theo tỉ lệ:
+- Train: 70%
+- Dev: 15%
+- Test: 15%
+
+Lưu ý:
+- Chia theo group Evidence, không tách 3 claim cùng Evidence sang các split khác nhau.
+- Giữ cân bằng nhãn trong từng split.
+- Mỗi split phải có đủ SUPPORTED, REFUTED, NEI.
+- Không làm rò rỉ cùng một Evidence sang nhiều split.
+
+K. Output
+Tạo các sheet hoặc bảng sau:
+
+1. Dataset_All:
+ID,Claim,Evidence,Label,Group_ID,Split
+
+2. Train:
+ID,Claim,Evidence,Label
+
+3. Dev:
+ID,Claim,Evidence,Label
+
+4. Test:
+ID,Claim,Evidence,Label
+
+5. QC_Summary:
+Metric,Value
+
+Các metric cần có:
+- Total samples
+- SUPPORTED count
+- REFUTED count
+- NEI count
+- Claim min words
+- Claim max words
+- Evidence min words
+- Evidence max words
+- Claim length violations
+- Evidence length violations
+- Duplicate claims
+- Evidence ellipsis rows
+- REFUTED forbidden-word rows
+- Filler artifact rows
+- Word-count mismatch rows
+- Overall CHECK rows
+
+6. QC_Detail:
+ID,Claim_Words,Evidence_Words,Duplicate_Claim,Forbidden_REF_Word,Filler_Artifact,Word_Count_Mismatch,Needs_Review
+
+Yêu cầu cuối:
+- Dữ liệu chính chỉ dùng 4 cột khi xuất bản nộp: ID, Claim, Evidence, Label.
+- QC có thể để sheet riêng.
+- Không giải thích dài trong output dữ liệu.
+- Không thêm nhãn khác ngoài SUPPORTED, REFUTED, NEI.

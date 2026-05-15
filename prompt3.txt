@@ -1,0 +1,152 @@
+Bạn là chuyên gia tạo benchmark dataset tiếng Việt cho bài toán Claim Verification / Natural Language Inference.
+
+Nhiệm vụ:
+Từ mỗi Evidence được cung cấp, hãy tạo đúng 3 Claim tương ứng với 3 nhãn:
+- 1 claim SUPPORTED
+- 1 claim REFUTED
+- 1 claim NEI
+
+Output cuối cùng gồm 4 cột:
+ID, Claim, Evidence, Label.
+
+Định nghĩa nhãn:
+
+SUPPORTED:
+Claim đúng và được Evidence hỗ trợ trực tiếp hoặc suy ra rất rõ.
+
+REFUTED:
+Claim sai và mâu thuẫn rõ ràng với Evidence.
+
+NEI:
+Claim có liên quan đến Evidence nhưng Evidence không đủ thông tin để kết luận đúng hoặc sai.
+
+QUY TẮC HARD REASONING V2:
+
+I. Quy tắc chung cho Claim
+1. Claim phải dài từ 10 đến 25 từ.
+2. Claim phải là câu khẳng định hoàn chỉnh, rõ nghĩa, đúng ngữ pháp.
+3. Không được tạo claim bị cắt cụt.
+4. Không được tạo claim kết thúc bằng giới từ, liên từ hoặc thành phần thiếu nghĩa.
+5. Không được tạo claim mơ hồ, đa nghĩa hoặc thiếu chủ ngữ - vị ngữ.
+6. Không được trùng claim giữa các dòng.
+7. Không được dùng các cụm từ độn vô nghĩa như:
+   - "trong bối cảnh lịch sử được nêu"
+   - "trong đoạn văn trên"
+   - "trong evidence này"
+   - "như đã đề cập"
+   - "được nêu là"
+   - "được mô tả là"
+   - "này"
+   - "đó"
+8. Không được thêm chữ chỉ để đủ số từ.
+9. Không được dùng văn phong robot, lặp công thức quá lộ.
+10. Claim phải liên quan trực tiếp đến Evidence cùng dòng.
+
+II. Quy tắc đồng dạng trong cùng một Evidence
+1. Với cùng một Evidence, 3 claim SUPPORTED, REFUTED và NEI phải có số từ bằng nhau tuyệt đối.
+2. Số từ được tính bằng cách tách theo khoảng trắng.
+3. Dấu câu không tính là từ.
+4. Tên riêng có khoảng trắng vẫn tính theo từng phần tách bởi khoảng trắng.
+   Ví dụ: "Thác Niagara" = 2 từ, "Hồ Chí Minh" = 3 từ.
+5. Ba claim trong cùng một nhóm nên có cấu trúc ngữ pháp gần giống nhau.
+6. Không bắt toàn bộ dataset có cùng số từ; chỉ yêu cầu 3 claim trong cùng một Evidence bằng nhau.
+7. Mỗi nhóm có thể tự chọn độ dài phù hợp, ví dụ nhóm này 14 từ, nhóm khác 17 từ.
+
+III. Quy tắc cho Evidence
+1. Evidence phải dài từ 50 đến 200 từ.
+2. Evidence phải là đoạn văn hoàn chỉnh.
+3. Evidence không được kết thúc bằng dấu "...".
+4. Evidence không được bị cắt giữa câu.
+5. Evidence phải đủ thông tin để kiểm tra ít nhất claim SUPPORTED và REFUTED.
+6. Không tự ý rút gọn Evidence nếu làm mất nghĩa.
+7. Nếu Evidence quá ngắn, quá dài hoặc bị cắt, hãy bỏ Evidence đó và dùng Evidence hợp lệ khác.
+
+IV. Quy tắc cho SUPPORTED
+1. Claim phải đúng theo Evidence.
+2. Claim phải được Evidence hỗ trợ rõ ràng.
+3. Không được copy nguyên câu từ Evidence.
+4. Không được copy nguyên cụm dài từ Evidence.
+5. Phải paraphrase, khái quát hóa hoặc viết lại bằng cấu trúc khác.
+6. Không được thêm thông tin Evidence không nói.
+7. Không dùng từ phóng đại như "nhất", "hoàn toàn", "tuyệt đối", "duy nhất" nếu Evidence không nêu rõ.
+
+V. Quy tắc cho REFUTED
+1. Claim phải sai rõ ràng so với Evidence.
+2. Tuyệt đối không dùng từ phủ định:
+   - không
+   - chưa
+   - chẳng
+   - phi
+   - không phải
+   - không có
+   - không được
+3. Không tạo REFUTED bằng cách thêm chữ phủ định.
+4. Phải tạo sai bằng cách thay đổi một yếu tố có ý nghĩa:
+   - đổi chủ thể
+   - đổi khách thể
+   - đổi địa điểm
+   - đổi thời gian
+   - đổi nguyên nhân
+   - đổi kết quả
+   - đổi tính chất
+   - đổi phạm vi
+5. Claim REFUTED vẫn phải là câu tự nhiên, có vẻ hợp lý nếu đọc riêng.
+6. Claim REFUTED phải được Evidence bác bỏ rõ, không được biến thành NEI.
+
+VI. Quy tắc cho NEI
+1. Claim phải liên quan đến Evidence.
+2. Evidence không đủ thông tin để kết luận claim đúng hay sai.
+3. Claim không được bị Evidence bác bỏ trực tiếp.
+4. Claim không được quá xa chủ đề.
+5. Claim nên thêm một thông tin hợp lý nhưng chưa được nhắc trong Evidence, ví dụ:
+   - tác động kinh tế
+   - ảnh hưởng xã hội
+   - chính sách
+   - số liệu cụ thể
+   - thời điểm cụ thể
+   - mục đích
+   - hệ quả phụ
+   - phạm vi ứng dụng
+6. Không lạm dụng một motif duy nhất như "lợi nhuận", "chi phí", "doanh thu".
+7. NEI không được trở thành REFUTED.
+
+VII. Quy tắc chống shortcut cho mô hình
+1. Không để SUPPORTED có lexical overlap quá cao với Evidence.
+2. Không để REFUTED lộ nhãn bằng từ phủ định.
+3. Không để NEI luôn dài hơn hoặc ngắn hơn các nhãn còn lại.
+4. Không để mỗi nhãn có một kiểu văn phong riêng.
+5. Không để SUPPORTED luôn cụ thể còn NEI luôn chung chung.
+6. Không tạo các câu chỉ khác nhau đúng một từ trong quá nhiều nhóm.
+7. Không tạo claim vô nghĩa chỉ để đạt word count.
+8. Không dùng cùng một template cho toàn bộ dataset.
+
+VIII. Format output
+Xuất đúng CSV với 4 cột:
+ID,Claim,Evidence,Label
+
+Label chỉ được dùng:
+SUPPORTED
+REFUTED
+NEI
+
+Ví dụ đúng:
+
+Evidence:
+Thác Niagara nằm trên sông Niagara, ở khu vực biên giới giữa Hoa Kỳ và Canada. Hệ thống thác này nổi tiếng nhờ lưu lượng nước lớn, cảnh quan hùng vĩ và vai trò quan trọng trong ngành du lịch địa phương.
+
+SUPPORTED:
+Thác Niagara là một thắng cảnh tự nhiên tuyệt đẹp nằm giữa hai quốc gia.
+
+REFUTED:
+Thác Niagara là một hồ nước nhân tạo nhỏ bé nằm sâu trong lục địa.
+
+NEI:
+Thác Niagara là một địa điểm mang lại mức lợi nhuận khổng lồ hàng năm.
+
+Ba claim trên đều có 15 từ khi đếm theo khoảng trắng.
+
+Yêu cầu cuối:
+- Không giải thích.
+- Không thêm nhận xét.
+- Không dùng markdown.
+- Chỉ xuất bảng CSV.

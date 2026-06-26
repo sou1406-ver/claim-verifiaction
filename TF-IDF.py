@@ -13,10 +13,12 @@ from underthesea import word_tokenize
 file_name = "lần 4.xlsx"
 
 xls = pd.ExcelFile(file_name)
+
 df_list = [pd.read_excel(xls, sheet_name=sheet) for sheet in xls.sheet_names]
 df_all = pd.concat(df_list, ignore_index=True)
 
 df_all = df_all.dropna(subset=["Claim", "Evidence", "Label"]).reset_index(drop=True)
+
 
 label_map = {
     "SUPPORTED": "SUPPORTED",
@@ -39,6 +41,7 @@ df_all = df_all.dropna(subset=["Label"]).reset_index(drop=True)
 def preprocess(claim, evidence):
     claim_tokenized = word_tokenize(str(claim), format="text")
     evidence_tokenized = word_tokenize(str(evidence), format="text")
+
     return claim_tokenized + " [SEP] " + evidence_tokenized
 
 
@@ -48,6 +51,7 @@ df_all["Text"] = df_all.apply(
     lambda row: preprocess(row["Claim"], row["Evidence"]),
     axis=1
 )
+
 
 unique_evidences = df_all["Evidence"].unique()
 
@@ -72,6 +76,7 @@ print(f"Train: {len(train_df)}")
 print(f"Dev  : {len(dev_df)}")
 print(f"Test : {len(test_df)}")
 
+
 X_train = train_df["Text"]
 y_train = train_df["Label"]
 
@@ -81,6 +86,7 @@ y_dev = dev_df["Label"]
 X_test = test_df["Text"]
 y_test = test_df["Label"]
 
+
 vectorizer = TfidfVectorizer(
     max_features=5000,
     ngram_range=(1, 2),
@@ -88,6 +94,7 @@ vectorizer = TfidfVectorizer(
 )
 
 X_train_tfidf = vectorizer.fit_transform(X_train)
+
 X_dev_tfidf = vectorizer.transform(X_dev)
 X_test_tfidf = vectorizer.transform(X_test)
 
@@ -98,9 +105,11 @@ def evaluate_model(model_name, model, X_eval, y_eval):
     print(f"\n========== {model_name} ==========")
     print("Phân phối nhãn thật:", dict(Counter(y_eval)))
     print("Phân phối dự đoán  :", dict(Counter(y_pred)))
+
     print(f"Accuracy: {accuracy_score(y_eval, y_pred):.4f}")
     print(f"Macro-F1: {f1_score(y_eval, y_pred, average='macro'):.4f}")
     print()
+
     print(classification_report(y_eval, y_pred, zero_division=0))
     print("-" * 70)
 
